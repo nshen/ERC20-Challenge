@@ -46,7 +46,16 @@ contract MyToken is ERC20 {
         address to,
         uint256 amount
     ) public override returns (bool) {
-        return super.transferFrom(from, to, amount);
+        // return super.transferFrom(from, to, amount);
+        uint256 currentAllowance = allowance(from, _msgSender());
+        require(
+            currentAllowance >= amount,
+            "ERC20: transfer amount exceeds allowance"
+        );
+
+        _transfer(from, to, amount);
+        _approve(from, _msgSender(), currentAllowance - amount);
+        return true;
     }
 
     function getBalanceOf(address account) public view returns (uint256) {
